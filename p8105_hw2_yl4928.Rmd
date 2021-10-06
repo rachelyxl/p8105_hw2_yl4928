@@ -77,6 +77,7 @@ polsmonth_df =
   separate(mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.integer(month),
          month = month.name[month],
+         year = as.numeric(year),
          president = ifelse(prez_gop == 0, "dem", "gop")) %>% 
   select(-prez_dem & -prez_gop & -day)
 ```
@@ -101,6 +102,37 @@ clean the data in snp.csv using a similar process to the above. For consistency 
   relocate(year, month)
 ```
 
+
+# Part_3
+tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+```{r, message = FALSE}
+unemployment_df = 
+  read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>%
+  pivot_longer(
+    jan:dec,
+    names_to = "month", 
+    values_to = "unemployment_rate"
+    ) %>% 
+  mutate(year = as.numeric(year)) %>% 
+    na.omit()
+```
+
+Join the datasets by merging snp into pols, and merging unemployment into the result
+
+```{r, message=FALSE}
+merge_df =
+  left_join(polsmonth_df, snp_df, by = c("year", "month")) %>%
+  left_join(unemployment_df, by = c("year", "month"))
+```
+
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+There are `r nrow(polsmonth_df)` observations in `polsmonth_df`. There are `r ncol(polsmonth_df)` variables in `polsmonth_df`. 
+There are `r nrow(snp_df)` observations in `snp_df`. There are `r ncol(snp_df)` variables in `snp_df`. 
+In the `unemployment_df`, there are `r nrow(unemployment_df)` observations and `r ncol(unemployment_df)` variables. 
+By merging snp into pols, and merging unemployment into the result, there are `r nrow(merge_df)` observations and `r ncol(merge_df)` variables. 
 
 
 
