@@ -57,4 +57,6 @@ precipitation_df =
   mutate(month = month.name[month])
 ```
 
+Write a paragraph about these data
 
+There are `r nrow(mtw_df)` observations in the Mr. Trash Wheel sheet. There are `r nrow(precipitation_df)` observations in the combined precipitation datasets of 2018 and 2019. Examples of key variables include `month` and `year`. The total precipitation in 2018 is `r precipitation_2018_df %>% pull(total) %>% sum`. The total precipitation in 2019 is `r precipitation_2019_df %>% pull(total) %>% sum`. The median number of sports balls in a dumpster in 2019 is `r mtw_df %>% filter(year == 2019) %>% pull(sports_balls) %>% median()`. 
