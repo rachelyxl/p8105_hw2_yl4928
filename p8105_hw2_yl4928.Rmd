@@ -135,4 +135,34 @@ In the `unemployment_df`, there are `r nrow(unemployment_df)` observations and `
 By merging snp into pols, and merging unemployment into the result, there are `r nrow(merge_df)` observations and `r ncol(merge_df)` variables. 
 
 
+## Question 3 
+
+Load and tidy the data. 
+
+```{r, message=FALSE}
+PopularBaby_df = 
+  read_csv("./data/Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>% 
+  mutate(
+    gender = tolower(gender),
+    ethnicity = tolower(ethnicity)) %>% 
+  distinct()
+```
+
+Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time
+
+```{r, message=FALSE}
+olivia_df = 
+  filter(PopularBaby_df, childs_first_name == "Olivia" & gender == "female") %>% 
+  pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "rank"
+  ) %>%
+  knitr::kable()
+```
+
+
+
+
+
 
