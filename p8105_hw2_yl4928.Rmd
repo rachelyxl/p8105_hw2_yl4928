@@ -5,7 +5,7 @@ date: "10/3/2021"
 output: github_document
 ---
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 library(readxl)
 ```
@@ -15,7 +15,7 @@ library(readxl)
 # Read and clean the Mr. Trash Wheel sheet
 # omit rows that do not include dumpster-specific data
 
-```{r}
+```{r, message = FALSE}
 mtw_df = 
   read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", range = "A2:N408") %>% 
   janitor::clean_names() %>% 
@@ -26,7 +26,7 @@ mtw_df =
 Read and clean precipitation data for 2018 and 2019. For each, omit rows without precipitation data and add a variable for year. Next, combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
 
 
-```{r}
+```{r, message = FALSE}
 precipitation_2018_df = 
    read_excel(
      "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
@@ -38,7 +38,7 @@ mutate(year = 2018)
 ```
 
 
-```{r}
+```{r, message = FALSE}
 precipitation_2019_df = 
     read_excel(
       "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
@@ -50,7 +50,7 @@ drop_na(total) %>%
 ```
 # combine precipitation datasets and convert month to a character variable
 
-```{r}
+```{r, message = FALSE}
 precipitation_df = 
   bind_rows(precipitation_2018_df, precipitation_2019_df) %>%
   janitor::clean_names() %>% 
@@ -60,3 +60,47 @@ precipitation_df =
 Write a paragraph about these data
 
 There are `r nrow(mtw_df)` observations in the Mr. Trash Wheel sheet. There are `r nrow(precipitation_df)` observations in the combined precipitation datasets of 2018 and 2019. Examples of key variables include `month` and `year`. The total precipitation in 2018 is `r precipitation_2018_df %>% pull(total) %>% sum`. The total precipitation in 2019 is `r precipitation_2019_df %>% pull(total) %>% sum`. The median number of sports balls in a dumpster in 2019 is `r mtw_df %>% filter(year == 2019) %>% pull(sports_balls) %>% median()`. 
+
+
+
+## Question_2 
+
+# part_a. 
+clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day
+replace month number with month name 
+create a president variable taking values gop and dem, and remove prez_dem and prez_gop and remove the day variable. 
+
+```{r, message = FALSE}
+polsmonth_df = 
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, into = c("year", "month", "day")) %>% 
+  mutate(month = as.integer(month),
+         month = month.name[month],
+         president = ifelse(prez_gop == 0, "dem", "gop")) %>% 
+  select(-prez_dem & -prez_gop & -day)
+```
+
+
+
+# Part_b
+clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+```{r, message=FALSE}
+ snp_df = 
+  read_csv("./data/fivethirtyeight_datasets/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(date = lubridate::mdy(date)) %>% 
+  separate(date, into = c("year", "month", "day")) %>% 
+  mutate(year = as.integer(year),
+         month = as.integer(month),
+         day = as.integer(day),
+         month = month.name[month]
+         ) %>% 
+  arrange(year, month) %>% 
+  relocate(year, month)
+```
+
+
+
+
