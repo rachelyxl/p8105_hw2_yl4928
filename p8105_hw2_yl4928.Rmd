@@ -154,6 +154,7 @@ Produce a well-structured, reader-friendly table showing the rank in popularity 
 ```{r, message=FALSE}
 olivia_df = 
   filter(PopularBaby_df, childs_first_name == "Olivia" & gender == "female") %>% 
+  select(-"count") %>% 
   pivot_wider(
     names_from = "year_of_birth",
     values_from = "rank"
@@ -161,6 +162,29 @@ olivia_df =
   knitr::kable()
 ```
 
+
+Produce a similar table showing the most popular name among male children over time.
+
+```{r, message=FALSE}
+popularmalename_df =
+  filter(PopularBaby_df, gender == "male", rank == 1) %>%
+  select(-"count", -"rank") %>% 
+  pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "childs_first_name"
+  ) %>%
+knitr::kable() 
+```
+
+# a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis)
+```{r, message = FALSE}
+whitenonhispanic_df = 
+  filter(
+    PopularBaby_df, 
+    gender == "male" & ethnicity == "white non hispanic" & year_of_birth == 2016)
+
+ggplot(whitenonhispanic_df, aes(x = rank, y = count, color = species)) + geom_point(color = "red")
+```
 
 
 
